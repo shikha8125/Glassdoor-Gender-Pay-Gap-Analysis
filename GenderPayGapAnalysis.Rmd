@@ -1,0 +1,126 @@
+---
+title: "Glassdoor Gender Pay Gap Analysis"
+author: "Shikha Ashara"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+```
+
+## Load and Clean Data
+
+```{r}
+#source: https://www.kaggle.com/datasets/nilimajauhari/glassdoor-analyze-gender-pay-gap
+df <- read_csv("glassdoor_data.csv") %>%
+drop_na() %>%
+mutate(
+Salary = BasePay + Bonus, # Total compensation
+Seniority = as.numeric(Seniority) # Ensure numeric for plotting
+)
+
+head(df)
+```
+
+## Average Salary by Gender
+
+```{r}
+gender_summary <- df %>%
+group_by(Gender) %>%
+summarize(
+mean_salary = mean(Salary, na.rm = TRUE),
+count = n()
+)
+gender_summary
+```
+
+## Salary by Department
+
+```{r}
+dept_plot <- df %>%
+group_by(Dept, Gender) %>%
+summarize(mean_salary = mean(Salary, na.rm = TRUE)) %>%
+ggplot(aes(x = Dept, y = mean_salary, fill = Gender)) +
+geom_col(position = "dodge") +
+labs(title = "Mean Salary by Department", y = "Mean Salary") 
+
+dept_plot
+```
+
+## Salary by Education
+
+```{r}
+edu_plot <- df %>%
+group_by(Education, Gender) %>%
+summarize(mean_salary = mean(Salary, na.rm = TRUE)) %>%
+ggplot(aes(x = Education, y = mean_salary, fill = Gender)) +
+geom_col(position = "dodge") +
+labs(title = "Mean Salary by Education", y = "Mean Salary") 
+
+edu_plot
+```
+
+## Scatterplot: Seniority vs Salary
+
+```{r}
+sen_plot <- ggplot(df, aes(x = Seniority, y = Salary, color = Gender)) +
+geom_point(alpha = 0.6) +
+labs(title = "Salary vs Seniority by Gender")
+
+sen_plot
+```
+
+## Boxplot: Salary Distribution by Gender
+
+```{r}
+box_plot <- ggplot(df, aes(x = Gender, y = Salary, fill = Gender)) +
+geom_boxplot() +
+labs(title = "Salary Distribution by Gender", y = "Salary")
+
+box_plot
+```
+
+## Hypothesis Testing
+
+### Two sided-test
+Null Hypothesis H0: There is no significant difference in the average salaries of male and female employees.
+Alternative Hypothesis HA: There is a significant difference in the average salaries of male and female workers.
+
+```{r}
+t_test_two_sided <- t.test(Salary ~ Gender, data = df)
+t_test_two_sided
+```
+>> Since p-value is very small, the null hypothesis that there is no significant difference between the salaries of male and female employees is rejected.
+
+### One-sided t-test (test if males earn more)
+
+```{r}
+t_test_one_sided <- t.test(Salary ~ Gender, data = df, alternative = "less")
+t_test_one_sided
+```
+>> Since p-value is very small, the null hypothesis that there is no significant difference between the salaries of male and female employees is rejected.
+
+
+## Multiple Linear Regression
+
+```{r}
+model <- lm(Salary ~ Gender + Education + Dept + Seniority, data = df)
+summary(model)
+```
+## Insights 
+
+Males earn about $8,749 more on average than females in comparable roles after controlling for education, department, and seniority.
+
+Seniority has the largest impact on pay.
+
+Education and department also affect salary.
+
+Boxplots and scatterplots clearly show disparities in pay between genders.
+
+
+
+
