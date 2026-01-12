@@ -18,19 +18,19 @@ Data Cleaning & Preparation: Removed missing values and created a total compensa
 
 Exploratory Data Analysis (EDA): Average salaries by gender, department, and education.
 
-## Visualizations:
+Visualizations:
 
-Bar charts comparing salaries by department and education.
+- Bar charts comparing salaries by department and education.
 
-Scatterplot showing salary vs. seniority.
+- Scatterplot showing salary vs. seniority.
 
-Boxplot displaying salary distribution by gender.
+- Boxplot displaying salary distribution by gender.
 
-## Hypothesis Testing:
+Hypothesis Testing:
 
-Two-sided t-test for differences between male and female salaries.
+- Two-sided t-test for differences between male and female salaries.
 
-One-sided t-test to check if males earn more than females.
+- One-sided t-test to check if males earn more than females.
 
 Multiple Linear Regression: Controlled for education, department, and seniority to quantify adjusted gender pay gaps.
 
